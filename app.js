@@ -1,6 +1,8 @@
+const btn = document.getElementsByClassName("btn-remove");
 const add = document.getElementById("add");
 const body = document.querySelector("body");
 const search = document.getElementById("search");
+let lista = document.getElementById("lista-despesas");
 
 class Despesa {
   constructor(ano, mes, dia, tipo, descricao, valor) {
@@ -41,6 +43,7 @@ class Bd {
   }
 
   gravar(d) {
+    this.ordenar();
     let id = this.getProximoId();
     localStorage.setItem(id, JSON.stringify(d));
     localStorage.setItem("id", id);
@@ -82,8 +85,31 @@ class Bd {
     $("#modal-aviso").modal("show");
     throw new Error(`Dados inacessiveis ou não existentes \n ${d}`);
   }
+  async ordenar() {
+    // Passo 1: Obter as chaves do localStorage
+    const keys = Object.keys(localStorage);
+
+    // Passo 2: Ordenar as chaves em ordem crescente
+    keys.sort((a, b) => parseInt(a) - parseInt(b));
+
+    // Passo 3: Criar um novo objeto para armazenar os valores na ordem das chaves ordenadas
+    const sortedLocalStorage = {};
+
+    // Passo 4: Copiar os valores correspondentes para o novo objeto
+    for (let i = 0; i < keys.length; i++) {
+      const key = keys[i];
+      sortedLocalStorage[key] = localStorage.getItem(key);
+    }
+
+    // Passo 5: Armazenar o novo objeto no localStorage
+    localStorage.clear();
+    for (const [key, value] of Object.entries(sortedLocalStorage)) {
+      localStorage.setItem(key, value);
+    }
+  }
 
   recuperarTodosRegistros() {
+    this.ordenar();
     let id = parseInt(localStorage.getItem("id"));
     let despesas = [];
     for (let i = 0; i <= id; i++) {
@@ -97,7 +123,8 @@ class Bd {
   }
 
   remover(id) {
-    localStorage.removeItem(id);
+    //    localStorage.removeItem(id);
+    console.log(id);
   }
 
   pesquisar() {}
@@ -124,7 +151,8 @@ function cadastrarDespesa() {
   despesa.validarDespesa() ? bd.gravar(despesa) : bd.erroGravar(despesa);
 }
 
-function carregaListaDespesas() {
+async function carregaListaDespesas() {
+  await bd.ordenar();
   let despesas = bd.recuperarTodosRegistros();
   let lista = document.getElementById("lista-despesas");
   let indice = 1;
@@ -144,19 +172,22 @@ function carregaListaDespesas() {
       <td>${despesa.tipo.trim()}</td>
       <td>${despesa.descricao.trim()}</td>
       <td>${despesa.valor.trim()}</td>
-      <td><button class="btn btn-danger" onclick="removerDespesa()">Remover</button></td>
+      <td><button class="btn btn-danger btn-remove" id="btn-${indice}">Remover</button></td>
       </tr>`;
-      indice++;
+    indice++;
   });
 }
 
-function removerDespesa(e) {
-  let botao = e.target;
-  let linha = botao.parentNode.parentNode
-  let id = linha.id;
-  bd.remover(id);
-  linha.parentNode.removeChild(linha);
-}
+lista.addEventListener("click", (event) => {
+  if (event.target && event.target.classList.contains("btn-remove")) {
+    let id = event.target.parentNode.parentNode.id;
+    //   bd.remover(id); // Remove do banco
+    event.target.parentNode.parentNode.remove();
+    console.log(`Botão clicado: ${event.target.parentNode.parentNode.id}`);
+  } else {
+    return;
+  }
+});
 
 function pesquisarDespesa() {
   let ano = document.getElementById("ano").value;
