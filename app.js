@@ -96,10 +96,8 @@ class Bd {
     return despesas;
   }
 
-  remover(indice) {
-    let item = JSON.parse(localStorage.getItem(indice));
-    localStorage.removeItem(item);
-    carregaListaDespesas();
+  remover(id) {
+    localStorage.removeItem(id);
   }
 
   pesquisar() {}
@@ -129,12 +127,11 @@ function cadastrarDespesa() {
 function carregaListaDespesas() {
   let despesas = bd.recuperarTodosRegistros();
   let lista = document.getElementById("lista-despesas");
-  let indice = 0;
+  let indice = 1;
   lista.innerHTML = "";
   despesas.forEach((despesa) => {
     let mes = despesa.mes;
     let dia = despesa.dia;
-    console.log(despesa);
     if (mes.length == 1) {
       mes = mes.toString().padStart(2, "0");
     }
@@ -147,9 +144,18 @@ function carregaListaDespesas() {
       <td>${despesa.tipo.trim()}</td>
       <td>${despesa.descricao.trim()}</td>
       <td>${despesa.valor.trim()}</td>
-      <td><button class="btn btn-danger" onclick="bd.remover(indice)">Remover</button></td>
+      <td><button class="btn btn-danger" onclick="removerDespesa()">Remover</button></td>
       </tr>`;
+      indice++;
   });
+}
+
+function removerDespesa(e) {
+  let botao = e.target;
+  let linha = botao.parentNode.parentNode
+  let id = linha.id;
+  bd.remover(id);
+  linha.parentNode.removeChild(linha);
 }
 
 function pesquisarDespesa() {
