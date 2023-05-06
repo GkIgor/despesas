@@ -89,7 +89,9 @@ class Bd {
     let despesas = [];
     for (let i = 0; i < id; i++) {
       let despesa = JSON.parse(localStorage.getItem(i));
-
+      if (despesa === null) {
+        continue;
+      }
       despesas.push(despesa);
     }
     console.log(despesas);
