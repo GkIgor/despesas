@@ -89,15 +89,20 @@ class Bd {
     let despesas = [];
     for (let i = 0; i < id; i++) {
       let despesa = JSON.parse(localStorage.getItem(i));
-      if (despesa === null) {
-        continue;
-      }
+
       despesas.push(despesa);
     }
+    console.log(despesas);
     return despesas
   }
 
+  remover(indice) {
+    localStorage.removeItem(indice);
+      carregaListaDespesas();
 
+  }
+
+  pesquisar() {}
 }
 const bd = new Bd();
 
@@ -123,20 +128,26 @@ function cadastrarDespesa() {
 }
 
 function carregaListaDespesas() {
+  console.log('função carregada')
   let despesas = bd.recuperarTodosRegistros();
     let lista = document.getElementById('lista-despesas');
+    let indicex = 0;
     lista.innerHTML = '';
-    despesas.forEach(function (despesa) {
-      lista.innerHTML += `<tr>
+    despesas.forEach((despesa) => {
+      lista.innerHTML += `<tr id="${indicex}">
       <td>${despesa.ano}</td>
       <td>${despesa.mes}</td>
       <td>${despesa.dia}</td>
       <td>${despesa.tipo}</td>
       <td>${despesa.descricao}</td>
       <td>${despesa.valor}</td>
-      <td><button class="btn btn-danger" onclick="removerDespesa(${despesa.id})">Remover</button></td>
+      <td><button class="btn btn-danger" onclick="removerDespesa(${indicex})">Remover</button></td>
       </tr>`;
     });
+}
+
+function removerDespesa(indice) {
+  bd.remover(indice);
 }
 
 function pesquisarDespesa() {
