@@ -1,5 +1,6 @@
 const add = document.getElementById('add');
 const body = document.querySelector('body');
+const search = document.getElementById('search');
 
 class Despesa {
   constructor(ano, mes, dia, tipo, descricao, valor) {
@@ -95,6 +96,8 @@ class Bd {
     }
     return despesas
   }
+
+
 }
 const bd = new Bd();
 
@@ -136,5 +139,19 @@ function carregaListaDespesas() {
     });
 }
 
-add.addEventListener('click', cadastrarDespesa)
-window.addEventListener('load', carregaListaDespesas)
+function pesquisarDespesa() {
+  let ano = document.getElementById('ano').value;
+  let mes = document.getElementById('mes').value;
+  let dia = document.getElementById('dia').value;
+  let tipo = document.getElementById('tipo').value;
+  let descricao = document.getElementById('descricao').value;
+  let valor = document.getElementById('valor').value;
+
+  let despesa = new Despesa(ano, mes, dia, tipo, descricao, valor);
+  bd.pesquisar(despesa);
+
+}
+
+window.addEventListener('load', carregaListaDespesas);
+add.addEventListener('click', cadastrarDespesa);
+search.addEventListener('click', pesquisarDespesa);
