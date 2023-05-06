@@ -40,7 +40,6 @@ class Bd {
     return proximoId + 1;
   }
 
-
   gravar(d) {
     let id = this.getProximoId();
     localStorage.setItem(id, JSON.stringify(d));
